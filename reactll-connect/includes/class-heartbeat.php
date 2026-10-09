@@ -96,6 +96,11 @@ class Reactll_Connect_Heartbeat
         if (! is_wp_error($result) && isset($result['settings'])) {
             update_option('reactll_connect_settings', (array) $result['settings'], false);
         }
+        // Reactll knows the newest release: when this site is behind, update now (still signature-checked),
+        // instead of waiting for WordPress's own twice-a-day check — which heavily cached sites rarely run.
+        if (! is_wp_error($result) && ! empty($result['plugin']['latest']) && version_compare($result['plugin']['latest'], REACTLL_CONNECT_VERSION, '>')) {
+            Reactll_Connect_Updater::updateNow();
+        }
         if (! is_wp_error($result) && isset($result['stats'])) {
             update_option('reactll_connect_stats', (array) $result['stats'] + ['fetched_at' => time()], false);
         }

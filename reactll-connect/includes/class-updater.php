@@ -41,9 +41,26 @@ class Reactll_Connect_Updater
         $data = is_wp_error($response) || (int) wp_remote_retrieve_response_code($response) !== 200
             ? []
             : (array) json_decode((string) wp_remote_retrieve_body($response), true);
-        set_site_transient(self::CACHE, $data, 6 * HOUR_IN_SECONDS);
+        set_site_transient(self::CACHE, $data, HOUR_IN_SECONDS);
 
         return $data ?: null;
+    }
+
+    /** Install the newest release now, the way WordPress's own automatic updates do (keeps it active). */
+    public static function updateNow()
+    {
+        if (get_transient('reactll_connect_updating')) {
+            return;
+        }
+        set_transient('reactll_connect_updating', 1, 15 * MINUTE_IN_SECONDS);
+        delete_site_transient(self::CACHE);
+        foreach (['file', 'misc', 'plugin', 'update', 'class-wp-upgrader'] as $file) {
+            require_once ABSPATH.'wp-admin/includes/'.$file.'.php';
+        }
+        wp_update_plugins();
+        if (function_exists('wp_maybe_auto_update')) {
+            wp_maybe_auto_update();
+        }
     }
 
     public static function check($transient)
