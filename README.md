@@ -27,6 +27,15 @@ bin/release.sh --publish  # and upload them to Reactll
 
 The signing key lives outside the repo (`~/.reactll-connect/signing.key`) and never goes into it.
 
+## Content-Security-Policy
+
+If the site sends a CSP header, allow Reactll Connect in it, or the browser blocks the script and its beacons:
+
+```
+script-src  … https://connect.reactll.com
+connect-src … https://connect.reactll.com
+```
+
 ## License
 
 MIT © Reactor Technology
