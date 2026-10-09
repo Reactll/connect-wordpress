@@ -4,7 +4,7 @@ Tags: analytics, leads, forms, site health
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: MIT
 
 Connects this site to its Reactll dashboard: visits, calls, WhatsApp and directions clicks, form leads and site health.
@@ -21,6 +21,10 @@ Reactll Connect is built and maintained by Reactor Technology for the sites it b
 Updates come from Reactll's own channel and are installed only when their signature checks out.
 
 == Changelog ==
+
+= 1.1.0 =
+* Its own Reactll menu and a redesigned page: connection status, this week's visits, form leads and calls.
+* "Reactll — this week" on the WordPress dashboard.
 
 = 1.0.0 =
 * First release.

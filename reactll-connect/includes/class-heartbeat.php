@@ -92,6 +92,9 @@ class Reactll_Connect_Heartbeat
         if (! is_wp_error($result) && isset($result['settings'])) {
             update_option('reactll_connect_settings', (array) $result['settings'], false);
         }
+        if (! is_wp_error($result) && isset($result['stats'])) {
+            update_option('reactll_connect_stats', (array) $result['stats'], false);
+        }
 
         return $result;
     }
