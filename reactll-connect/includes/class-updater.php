@@ -46,21 +46,30 @@ class Reactll_Connect_Updater
         return $data ?: null;
     }
 
-    /** Install the newest release now, the way WordPress's own automatic updates do (keeps it active). */
+    /** Install the newest release now (signature-checked like any update) and keep it active. */
     public static function updateNow()
     {
         if (get_transient('reactll_connect_updating')) {
-            return;
+            return false;
         }
         set_transient('reactll_connect_updating', 1, 15 * MINUTE_IN_SECONDS);
-        delete_site_transient(self::CACHE);
         foreach (['file', 'misc', 'plugin', 'update', 'class-wp-upgrader'] as $file) {
             require_once ABSPATH.'wp-admin/includes/'.$file.'.php';
         }
+        // Fresh offers: ours from Reactll (check() fills it in), the rest as WordPress knows them.
+        delete_site_transient(self::CACHE);
+        delete_site_transient('update_plugins');
         wp_update_plugins();
-        if (function_exists('wp_maybe_auto_update')) {
-            wp_maybe_auto_update();
+
+        $active = is_plugin_active(REACTLL_CONNECT_BASENAME);
+        $upgrader = new Plugin_Upgrader(new Automatic_Upgrader_Skin());
+        $result = $upgrader->upgrade(REACTLL_CONNECT_BASENAME);
+        if ($active && ! is_plugin_active(REACTLL_CONNECT_BASENAME)) {
+            activate_plugin(REACTLL_CONNECT_BASENAME, '', false, true);
         }
+        delete_transient('reactll_connect_updating');
+
+        return $result === true;
     }
 
     public static function check($transient)
