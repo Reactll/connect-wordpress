@@ -22,6 +22,10 @@ class Reactll_Connect_Heartbeat
 
     public static function activate()
     {
+        // Pages cached before the plugin was here would never load the script.
+        if (Reactll_Connect_Client::connected()) {
+            Reactll_Connect_Cache::purge();
+        }
         if (! wp_next_scheduled(self::HOOK)) wp_schedule_event(time() + 60, 'hourly', self::HOOK);
         if (! wp_next_scheduled('reactll_connect_retry')) wp_schedule_event(time() + 300, 'hourly', 'reactll_connect_retry');
     }
@@ -93,7 +97,7 @@ class Reactll_Connect_Heartbeat
             update_option('reactll_connect_settings', (array) $result['settings'], false);
         }
         if (! is_wp_error($result) && isset($result['stats'])) {
-            update_option('reactll_connect_stats', (array) $result['stats'], false);
+            update_option('reactll_connect_stats', (array) $result['stats'] + ['fetched_at' => time()], false);
         }
 
         return $result;

@@ -68,6 +68,9 @@ class Reactll_Connect_Settings
             update_option(Reactll_Connect_Client::OPTION, $token, false);
         }
         $result = Reactll_Connect_Heartbeat::send();
+        if (! is_wp_error($result)) {
+            Reactll_Connect_Cache::purge();
+        }
 
         wp_safe_redirect(add_query_arg(['reactll' => is_wp_error($result) ? 'error' : 'ok'], self::url()));
         exit;
@@ -77,6 +80,15 @@ class Reactll_Connect_Settings
     private static function state()
     {
         $last = (array) get_option('reactll_connect_last', []);
+        $stats = (array) get_option('reactll_connect_stats', []);
+        // Fresh numbers when the page opens (at most every two minutes), not the last hourly heartbeat's.
+        if (Reactll_Connect_Client::connected() && (int) ($stats['fetched_at'] ?? 0) < time() - 120) {
+            $answer = Reactll_Connect_Client::post('stats', [], 4);
+            if (! is_wp_error($answer) && isset($answer['stats'])) {
+                $stats = (array) $answer['stats'] + ['fetched_at' => time()];
+                update_option('reactll_connect_stats', $stats, false);
+            }
+        }
 
         return [
             'connected' => Reactll_Connect_Client::connected(),
@@ -84,7 +96,7 @@ class Reactll_Connect_Settings
             'site' => $last['site'] ?? null,
             'error' => $last['error'] ?? null,
             'at' => isset($last['at']) ? (int) $last['at'] : null,
-            'stats' => (array) get_option('reactll_connect_stats', []),
+            'stats' => $stats,
         ];
     }
 
@@ -163,6 +175,7 @@ class Reactll_Connect_Settings
                         <p class="rc-help">From your Reactll team, or Reactll → Sites → this site → Install.</p>
                         <button type="submit" class="rc-button"><?php echo $s['connected'] ? 'Save & test connection' : 'Connect'; ?></button>
                         <?php if ($s['at']) : ?><p class="rc-help">Last checked <?php echo esc_html(sprintf(__('%s ago'), human_time_diff($s['at']))); ?>.</p><?php endif; ?>
+                        <?php $cache = (array) get_option('reactll_connect_cache_cleared', []); if (! empty($cache['caches'])) : ?><p class="rc-help">Cleared <?php echo esc_html(implode(', ', $cache['caches'])); ?> so every page loads Reactll Connect.</p><?php endif; ?>
                     </form>
                 </div>
             </div>

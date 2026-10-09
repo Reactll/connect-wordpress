@@ -21,7 +21,13 @@ class Reactll_Connect_Updater
         add_filter('auto_update_plugin', function ($update, $item) {
             return (isset($item->plugin) && $item->plugin === REACTLL_CONNECT_BASENAME) ? true : $update;
         }, 10, 2);
-        add_action('upgrader_process_complete', function () { delete_site_transient(self::CACHE); });
+        add_action('upgrader_process_complete', function ($upgrader, $extra = []) {
+            delete_site_transient(self::CACHE);
+            // Our own update: clear page caches, so pages built by an older version are rebuilt.
+            if (($extra['type'] ?? null) === 'plugin' && in_array(REACTLL_CONNECT_BASENAME, (array) ($extra['plugins'] ?? []), true) && Reactll_Connect_Client::connected()) {
+                Reactll_Connect_Cache::purge();
+            }
+        }, 10, 2);
     }
 
     /** @return array|null */

@@ -3,7 +3,7 @@
  * Plugin Name:       Reactll Connect
  * Plugin URI:        https://reactll.com
  * Description:       Connects this site to its Reactll dashboard: visits, calls, WhatsApp and directions clicks, form leads and site health. Built and maintained by Reactor Technology.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Reactor Technology
@@ -14,7 +14,7 @@
 
 defined('ABSPATH') || exit;
 
-define('REACTLL_CONNECT_VERSION', '1.1.0');
+define('REACTLL_CONNECT_VERSION', '1.1.1');
 define('REACTLL_CONNECT_FILE', __FILE__);
 define('REACTLL_CONNECT_BASENAME', plugin_basename(__FILE__));
 // Releases are signed with this key's private half (kept offline by Reactor Technology). An update
@@ -22,6 +22,7 @@ define('REACTLL_CONNECT_BASENAME', plugin_basename(__FILE__));
 define('REACTLL_CONNECT_SIGNING_KEY', 'fSKftwkAB1jQw75blPW6wskm5DcAkx1at2emmTc7Qeg=');
 
 require_once __DIR__.'/includes/class-client.php';
+require_once __DIR__.'/includes/class-cache.php';
 require_once __DIR__.'/includes/class-tracker.php';
 require_once __DIR__.'/includes/class-forms.php';
 require_once __DIR__.'/includes/class-heartbeat.php';
