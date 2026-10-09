@@ -2,7 +2,7 @@
 // Removing the plugin removes its settings and queue; the site's data in Reactll stays there.
 defined('WP_UNINSTALL_PLUGIN') || exit;
 
-foreach (['reactll_connect_token', 'reactll_connect_settings', 'reactll_connect_last', 'reactll_connect_queue', 'reactll_connect_stats', 'reactll_connect_cache_cleared'] as $option) {
+foreach (['reactll_connect_token', 'reactll_connect_settings', 'reactll_connect_last', 'reactll_connect_queue', 'reactll_connect_stats', 'reactll_connect_cache_cleared', 'reactll_connect_version'] as $option) {
     delete_option($option);
 }
 delete_site_transient('reactll_connect_release');
