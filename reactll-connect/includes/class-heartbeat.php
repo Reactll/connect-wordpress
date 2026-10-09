@@ -74,6 +74,8 @@ class Reactll_Connect_Heartbeat
             'theme' => $theme->get('Name').' '.$theme->get('Version'),
             'woocommerce' => defined('WC_VERSION') ? WC_VERSION : null,
             'multisite' => is_multisite() ? 'yes' : null,
+            // Settings → General → Timezone: Reactll counts the site's days on this clock.
+            'timezone' => function_exists('wp_timezone_string') ? wp_timezone_string() : null,
         ]);
 
         $result = Reactll_Connect_Client::post('heartbeat', [
